@@ -11,11 +11,11 @@ import (
 )
 
 func main() {
-	if len(os.Args) == 0 {
+	if len(os.Args) < 2 {
 		log.Fatal("Config file must be provided.")
 	}
 
-	content, err := ioutil.ReadFile(os.Args[0])
+	content, err := ioutil.ReadFile(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}

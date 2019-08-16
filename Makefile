@@ -2,13 +2,11 @@ SHELL := /bin/bash
 
 .PHONY: all check format vet lint build release clean test coverage
 
-VERSION=$(shell cat ./constants/version.go | grep "Version\ =" | sed -e s/^.*\ //g | sed -e s/\"//g)
-
 help:
 	@echo "Please use \`make <target>\` where <target> is one of"
 	@echo "  check      to format, vet and lint "
-	@echo "  build      to create bin directory and build qsctl"
-	@echo "  release    to release qsctl"
+	@echo "  build      to create bin directory and build go-mod-redirect"
+	@echo "  release    to release go-mod-redirect"
 	@echo "  clean      to clean build and test files"
 	@echo "  test       to run test"
 	@echo "  coverage   to test with coverage"
@@ -31,20 +29,9 @@ lint:
 	@echo "ok"
 
 build: check
-	@echo "build qsctl"
+	@echo "build go-mod-redirect"
 	@mkdir -p ./bin
 	@go build -tags netgo -o ./bin/go-mod-redirect ./cmd/go-mod-redirect
-	@echo "ok"
-
-release:
-	@echo "release qsctl"
-	@-rm ./release/*
-	@mkdir -p ./release
-
-	@echo "build for linux"
-	@GOOS=linux GOARCH=amd64 go build -o ./bin/linux/qsctl_v${VERSION}_linux_amd64 ${CMD_PKG}
-	@tar -C ./bin/linux/ -czf ./release/qsctl_v${VERSION}_linux_amd64.tar.gz qsctl_v${VERSION}_linux_amd64
-
 	@echo "ok"
 
 clean:

@@ -1,0 +1,5 @@
+host: example.com
+paths:
+  /foo:
+    repo: https://github.com/example/foo
+    vcs: git

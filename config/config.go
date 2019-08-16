@@ -1,6 +1,7 @@
 package config
 
 import (
+	"log"
 	"strings"
 
 	"gopkg.in/yaml.v2"
@@ -39,11 +40,15 @@ func Parse(content []byte) (s *Service, err error) {
 // Find will find a path from Service.
 func (s Service) Find(path string) (*Mapping, string) {
 	for _, v := range s.Paths {
-		if !strings.HasSuffix(v.Path, path) {
+		if !strings.HasPrefix(v.Path, path) {
+			log.Printf("Path %s is not found in Service", path)
 			continue
 		}
 
 		m := v
+		if path == v.Path {
+			return &m, ""
+		}
 		return &m, path[len(v.Path)+1:]
 	}
 	return nil, ""

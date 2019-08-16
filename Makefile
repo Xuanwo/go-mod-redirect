@@ -42,7 +42,7 @@ release:
 	@mkdir -p ./release
 
 	@echo "build for linux"
-	@GOOS=linux GOARCH=amd64 go build -o ./bin/linux/go-mod-redirect ./cmd/go-mod-redirect
+	@GOOS=linux GOARCH=amd64 go build -tags netgo -o ./bin/linux/go-mod-redirect ./cmd/go-mod-redirect
 	@tar -C ./bin/linux/ -czf ./release/go-mod-redirect_${VERSION}_linux_amd64.tar.gz go-mod-redirect
 
 	@echo "ok"

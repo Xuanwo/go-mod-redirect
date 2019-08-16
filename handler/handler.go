@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/Xuanwo/go-mod-redirect/config"
@@ -19,6 +20,7 @@ func New(c *config.Service) (h *Handler, err error) {
 
 // ServeHTTP implement http.Handler.
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Receive request %s", r.URL.Path)
 	current := r.URL.Path
 	m, subpath := h.Find(current)
 	if m == nil && current == "/" {

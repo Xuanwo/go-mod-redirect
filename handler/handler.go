@@ -21,12 +21,32 @@ func New(c *config.Service) (h *Handler, err error) {
 // ServeHTTP implement http.Handler.
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Receive request %s", r.URL.Path)
-	current := r.URL.Path
-	m, subpath := h.Find(current)
-	if m == nil && current == "/" {
+	switch r.URL.Path {
+	case "/":
 		h.serveIndex(w, r)
-		return
+	default:
+		h.serveImport(w, r)
 	}
+}
+
+func (h *Handler) serveIndex(w http.ResponseWriter, r *http.Request) {
+	paths := make([]string, len(h.Paths))
+	for i, v := range h.Paths {
+		paths[i] = h.Host + v.Path
+	}
+	if err := indexTmpl.Execute(w, struct {
+		Host  string
+		Paths []string
+	}{
+		Host:  h.Host,
+		Paths: paths,
+	}); err != nil {
+		http.Error(w, "cannot render the page", http.StatusInternalServerError)
+	}
+}
+
+func (h *Handler) serveImport(w http.ResponseWriter, r *http.Request) {
+	m, subpath := h.Find(r.URL.Path)
 	if m == nil {
 		http.NotFound(w, r)
 		return
@@ -43,22 +63,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		Subpath: subpath,
 		Repo:    m.Repo,
 		VCS:     m.VCS,
-	}); err != nil {
-		http.Error(w, "cannot render the page", http.StatusInternalServerError)
-	}
-}
-
-func (h *Handler) serveIndex(w http.ResponseWriter, r *http.Request) {
-	paths := make([]string, len(h.Paths))
-	for i, v := range h.Paths {
-		paths[i] = h.Host + v.Path
-	}
-	if err := indexTmpl.Execute(w, struct {
-		Host  string
-		Paths []string
-	}{
-		Host:  h.Host,
-		Paths: paths,
 	}); err != nil {
 		http.Error(w, "cannot render the page", http.StatusInternalServerError)
 	}

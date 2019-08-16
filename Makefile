@@ -2,6 +2,8 @@ SHELL := /bin/bash
 
 .PHONY: all check format vet lint build release clean test coverage
 
+VERSION=`git describe`
+
 help:
 	@echo "Please use \`make <target>\` where <target> is one of"
 	@echo "  check      to format, vet and lint "
@@ -32,6 +34,17 @@ build: check
 	@echo "build go-mod-redirect"
 	@mkdir -p ./bin
 	@go build -tags netgo -o ./bin/go-mod-redirect ./cmd/go-mod-redirect
+	@echo "ok"
+
+release:
+	@echo "release go-mod-redirect"
+	@-rm ./release/*
+	@mkdir -p ./release
+
+	@echo "build for linux"
+	@GOOS=linux GOARCH=amd64 go build -o ./bin/linux/go-mod-redirect_v${VERSION}_linux_amd64 ./cmd/go-mod-redirect
+	@tar -C ./bin/linux/ -czf ./release/go-mod-redirect_v${VERSION}_linux_amd64.tar.gz go-mod-redirect_v${VERSION}_linux_amd64
+
 	@echo "ok"
 
 clean:
